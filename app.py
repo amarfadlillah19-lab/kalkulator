@@ -5,27 +5,29 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'kalkulatorpro'
 
-history_store = []
+history_store = [] # Menyimpan riwayat kalkulasi selama server berjalan
 
 EXCHANGE_RATES = {
     'USD': 16250, 'EUR': 17800, 'SGD': 12100,
     'JPY': 108, 'MYR': 3650, 'GBP': 20500
 }
-
+# Halaman utama
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# API untuk operasi aritmatika
 @app.route('/api/aritmatika', methods=['POST'])
 def aritmatika():
     data = request.get_json()
     a = data.get('a'); b = data.get('b'); op = data.get('op', '+')
     try:
         a = float(a)
-        if op != '√': b = float(b)
+        if op != '√': b = float(b) # Untuk operasi akar kuadrat, hanya a yang digunakan, b diabaikan saja
     except (TypeError, ValueError):
         return jsonify({'error': 'Input harus berupa angka!'}), 400
 
+    # Definisikan operasi aritmatika dengan langkah-langkah penjelasan yang lebih rinci dan bahasa yang lebih mudah dipahami. Setiap operasi akan memiliki penjelasan langkah demi langkah yang jelas, termasuk penjelasan tentang variabel yang digunakan dan proses perhitungannya.
     ops = {
         '+': lambda: (a + b, f'{a} + {b}', [f'Menyiapkan operasi penjumlahan (+)', f'Variabel A ditetapkan: {a}', f'Variabel B ditetapkan: {b}', f'Mengkalkulasi: {a} ditambah {b}']),
         '-': lambda: (a - b, f'{a} - {b}', [f'Menyiapkan operasi pengurangan (-)', f'Variabel A ditetapkan: {a}', f'Variabel B ditetapkan: {b}', f'Mengkalkulasi: {a} dikurangi {b}']),
@@ -47,7 +49,7 @@ def aritmatika():
     if result == int(result): result = int(result)
     steps.append(f'Evaluasi selesai. Hasil akhir: {result}')
     
-    # Simpan ke history dengan format yang diminta
+    # Simpan ke history 
     history_store.append({
         'formula': formula,
         'result': str(result)
@@ -55,4 +57,39 @@ def aritmatika():
     
     return jsonify({'result': result, 'formula': formula, 'steps': steps})
 
+# API: Operasi logika bitwise (AND, OR, NOT, XOR, NAND, NOR)
 @app.route('/api/logika', methods=['POST'])
+def logika():
+    data = request.get_json()
+    a = data.get('a'); b = data.get('b'); op = data.get('op', 'AND')
+    try:
+        a = int(a)
+        if op != 'NOT': b = int(b) # NOT hanya butuh 1 input
+    except (TypeError, ValueError):
+        return jsonify({'error': 'Input harus berupa bilangan bulat!'}), 400
+
+# Definisikan operasi logika bitwise dengan penjelasan langkah demi langkah yang lebih rinci dan bahasa yang lebih mudah dipahami. Setiap operasi akan memiliki penjelasan langkah demi langkah yang jelas, termasuk penjelasan tentang variabel yang digunakan, representasi biner, dan proses perhitungannya. 
+    ops = {
+        'AND': lambda: (a & b, f'{a} AND {b}'),
+        'OR': lambda: (a | b, f'{a} OR {b}'),
+        'NOT': lambda: (~a, f'NOT {a}'),
+        'XOR': lambda: (a ^ b, f'{a} XOR {b}'),
+        'NAND': lambda: (~(a & b), f'{a} NAND {b}'),
+        'NOR': lambda: (~(a | b), f'{a} NOR {b}'),
+    }
+    if op not in ops:
+        return jsonify({'error': f'Operasi "{op}" tidak dikenal!'}), 400
+    result, formula = ops[op]()
+    
+    # Susun langkah-langkah penjelasan biner
+    steps = [f'Menyiapkan operasi bitwise {op}']
+    steps.append(f'Representasi biner A ({a}): {bin(a)}')
+    if op != 'NOT':
+        steps.append(f'Representasi biner B ({b}): {bin(b)}')
+    
+    steps.append(f'Mengeksekusi operasi bit per bit...')
+    steps.append(f'Evaluasi selesai. Hasil biner: {bin(result)}')
+    steps.append(f'Hasil desimal: {result}')
+
+    history_store.append({'formula': formula, 'result': str(result)})
+    return jsonify({'result': result, 'formula': formula, 'steps': steps})
