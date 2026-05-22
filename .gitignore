@@ -1,0 +1,33 @@
+# ═══ Python / Flask ═══
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv/
+venv/
+env/
+instance/
+.webassets-cache
+
+# ═══ Distribution / Packaging ═══
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# ═══ IDE / Editor ═══
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ═══ OS Generated ═══
+.DS_Store
+Thumbs.db
+
+# ═══ Logs & Database ═══
+*.log
+*.sqlite
+*.db
