@@ -93,3 +93,29 @@ def logika():
 
     history_store.append({'formula': formula, 'result': str(result)})
     return jsonify({'result': result, 'formula': formula, 'steps': steps})
+
+# API: Konversi basis bilangan (Desimal, Biner, Oktal, Heksadesimal)
+@app.route('/api/basis', methods=['POST'])
+def basis_bilangan():
+    data = request.get_json()
+    value = data.get('value', '').strip(); basis = data.get('basis', 'Desimal')
+    try:
+        bases = {'Desimal': 10, 'Biner': 2, 'Oktal': 8, 'Heksadesimal': 16}
+        num = int(value, bases.get(basis, 10))  # Ubah ke integer sesuai basis asal
+    except (ValueError, KeyError):
+        return jsonify({'error': f'Nilai "{value}" tidak valid untuk basis {basis}!'}), 400
+
+    # Konversi ke semua basis target (hapus prefix '0b', '0o', '0x')
+    results = {'desimal': str(num), 'biner': bin(num)[2:], 'oktal': oct(num)[2:], 'heksadesimal': hex(num)[2:].upper()}
+    formula = f'{value} ({basis})'
+    
+    steps = [
+        f'Menyiapkan konversi dari basis {basis}',
+        f'Nilai input: {value}',
+        f'Mengonversi ke nilai absolut (desimal): {num}',
+        f'Membuat pemetaan ke basis lain...',
+        f'Evaluasi selesai.'
+    ]
+    
+    history_store.append({'formula': formula, 'result': f'DEC:{results["desimal"]}'})
+    return jsonify({'results': results, 'formula': formula, 'steps': steps})
