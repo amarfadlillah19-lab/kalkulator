@@ -217,3 +217,17 @@ def fibonacci():
     ]
     history_store.append({'formula': formula, 'result': str(fib[-1])})
     return jsonify({'result': fib, 'formula': formula, 'steps': steps})
+
+# API: Ambil riwayat kalkulasi
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    return jsonify({'history': history_store})  # Urutan asli (top-down seperti terminal)
+
+# API: Hapus seluruh riwayat kalkulasi
+@app.route('/api/history', methods=['DELETE'])
+def clear_history():
+    history_store.clear()
+    return jsonify({'message': 'History berhasil dihapus!'})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5050)
