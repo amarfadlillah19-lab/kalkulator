@@ -119,3 +119,54 @@ def basis_bilangan():
     
     history_store.append({'formula': formula, 'result': f'DEC:{results["desimal"]}'})
     return jsonify({'results': results, 'formula': formula, 'steps': steps})
+
+# API: Konversi suhu (Celsius, Fahrenheit, Kelvin, Reamur)
+@app.route('/api/suhu', methods=['POST'])
+def konversi_suhu():
+    data = request.get_json()
+    value = data.get('value'); unit = data.get('unit', 'Celsius')
+    try: value = float(value)
+    except (TypeError, ValueError): return jsonify({'error': 'Input harus berupa angka!'}), 400
+
+    # Normalisasi semua satuan ke Celsius terlebih dahulu
+    to_c = {'Celsius': lambda v: v, 'Fahrenheit': lambda v: (v-32)*5/9, 'Kelvin': lambda v: v-273.15, 'Reamur': lambda v: v*5/4}
+    if unit not in to_c: return jsonify({'error': f'Satuan "{unit}" tidak dikenal!'}), 400
+    c = to_c[unit](value)
+    results = {'celsius': round(c,2), 'fahrenheit': round(c*9/5+32,2), 'kelvin': round(c+273.15,2), 'reamur': round(c*4/5,2)}
+    formula = f'{value}° {unit}'
+    
+    steps = [
+        f'Menyiapkan konversi temperatur',
+        f'Input: {value} derajat {unit}',
+        f'Menormalisasi nilai ke Celsius: {round(c, 2)}°C',
+        f'Menghitung proporsi ke Fahrenheit, Kelvin, dan Reamur...',
+        f'Evaluasi selesai.'
+    ]
+    
+    history_store.append({'formula': formula, 'result': f'{results["celsius"]}°C'})
+    return jsonify({'results': results, 'formula': formula, 'steps': steps})
+
+# API: Konversi mata uang dari IDR ke valuta asing
+@app.route('/api/matauang', methods=['POST'])
+def konversi_mata_uang():
+    data = request.get_json()
+    try: idr = float(data.get('value'))
+    except (TypeError, ValueError): return jsonify({'error': 'Input harus berupa angka!'}), 400
+    if idr < 0: return jsonify({'error': 'Nilai tidak boleh negatif!'}), 400
+
+    # Hitung ekuivalensi IDR ke tiap mata uang asing
+    results = {k.lower(): round(idr / v, 2) for k, v in EXCHANGE_RATES.items()}
+    formula = f'Rp {idr:,.0f}'
+    
+    steps = [
+        f'Menyiapkan konversi valuta asing',
+        f'Nilai dasar (IDR): Rp {idr:,.0f}',
+        f'Mengambil kurs valuta saat ini...'
+    ]
+    for k, v in EXCHANGE_RATES.items():
+        steps.append(f'Rate {k}: Rp {v:,}')
+    steps.append('Menghitung ekuivalensi...')
+    steps.append('Evaluasi selesai.')
+    
+    history_store.append({'formula': formula, 'result': f'${results["usd"]}'})
+    return jsonify({'results': results, 'formula': formula, 'steps': steps})
