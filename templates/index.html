@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KalkulatorPromax - v1.0</title>
+  <!-- Menghubungkan file styling eksternal bergaya retro Y2K -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- BACKGROUND EFEK GELOMBANG/SWIRL -->
+  <div class="desktop-bg"></div>
+
+  <!-- ═══ MENU BAR (Bar navigasi atas mirip sistem operasi klasik) ═══ -->
+  <div class="menu-bar">
+    <div class="menu-bar-left">
+      <!-- Judul brand aplikasi -->
+      <span style="font-weight:700;">KalkulatorPromax - v1.0</span>
+      <!-- Menu dekoratif khas desktop klasik -->
+      <span style="margin-left:16px; color:var(--accent);">File</span>
+      <span>Edit</span>
+      <span>View</span>
+      <span>Help</span>
+    </div>
+    <div class="menu-bar-right">
+      <!-- Penunjuk waktu digital -->
+      <span class="clock" id="clock" style="margin-right:12px;">00:00:00</span>
+      <!-- Tombol pengalih tema gelap/terang -->
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN LAYOUT (Tata Letak Desktop Area & Sidebar) ═══ -->
+  <div class="app-layout">
+    <div class="desktop-area">
+
+      <!-- ═══ CALCULATOR WINDOW (Jendela Utama Pengolah Data) ═══ -->
+      <div class="retro-window calc-window">
+        <!-- Titlebar jendela retro -->
+        <div class="window-titlebar">
+          <div class="window-dots">
+            <span class="window-dot red"></span>
+            <span class="window-dot grey"></span>
+          </div>
+          <span id="windowTitle" style="font-size: 16px; font-weight:700; text-transform:none;">Arithmetic</span>
+        </div>
+        
+        <!-- NAVIGASI TAB (Tombol-tombol untuk berganti halaman fitur) -->
+        <div class="tab-nav">
+          <div class="tab-btn active" data-tab="aritmatika" onclick="switchTab('aritmatika')">Aritmatika</div>
+          <div class="tab-btn" data-tab="logika" onclick="switchTab('logika')">Logika</div>
+          <div class="tab-btn" data-tab="basis" onclick="switchTab('basis')">Basis</div>
+          <div class="tab-btn" data-tab="suhu" onclick="switchTab('suhu')">Suhu</div>
+          <div class="tab-btn" data-tab="matauang" onclick="switchTab('matauang')">Kurs</div>
+          <div class="tab-btn" data-tab="bonus" onclick="switchTab('bonus')">Bonus</div>
+        </div>
+
+        <div class="window-body">
+          <!-- ═══ TAB 1: ARITMATIKA (Penjumlahan, Pengurangan, Pembagian, Perkalian, dll) ═══ -->
+          <div class="tab-content active" id="tab-aritmatika">
+            <div class="input-row">
+              <!-- Input untuk variabel angka A -->
+              <div class="input-group">
+                <label class="input-label" for="aritA">Variable A:</label>
+                <input type="number" class="retro-input" id="aritA" placeholder="Enter number...">
+              </div>
+              <!-- Input untuk variabel angka B -->
+              <div class="input-group">
+                <label class="input-label" for="aritB">Variable B:</label>
+                <input type="number" class="retro-input" id="aritB" placeholder="Enter number...">
+              </div>
+            </div>
+            
+            <!-- Grid pilihan operator aritmatika -->
+            <div class="op-grid">
+              <button class="op-btn active" onclick="selectOp('aritmatika','+',this)">+</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','-',this)">-</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','×',this)">*</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','÷',this)">/</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','%',this)">%</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','^',this)">^</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','//',this)">mod</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','√',this)">root</button>
+            </div>
+            <button class="btn-hitung" onclick="hitungAritmatika()">[ HITUNG ]</button>
+          </div>
+
+          <!-- ═══ TAB 2: LOGIKA (Bitwise AND, OR, NOT, XOR, NAND, NOR) ═══ -->
+          <div class="tab-content" id="tab-logika">
+            <div class="input-row">
+              <!-- Input integer variabel A -->
+              <div class="input-group">
+                <label class="input-label" for="logA">Variable A (integer):</label>
+                <input type="number" class="retro-input" id="logA" placeholder="Enter number...">
+              </div>
+              <!-- Input integer variabel B -->
+              <div class="input-group">
+                <label class="input-label" for="logB">Variable B (integer):</label>
+                <input type="number" class="retro-input" id="logB" placeholder="Enter number...">
+              </div>
+            </div>
+            <!-- Grid tombol operasi bitwise -->
+            <div class="op-grid op-grid-3">
+              <button class="op-btn active" onclick="selectOp('logika','AND',this)">AND</button>
+              <button class="op-btn" onclick="selectOp('logika','OR',this)">OR</button>
+              <button class="op-btn" onclick="selectOp('logika','NOT',this)">NOT</button>
+              <button class="op-btn" onclick="selectOp('logika','XOR',this)">XOR</button>
+              <button class="op-btn" onclick="selectOp('logika','NAND',this)">NAND</button>
+              <button class="op-btn" onclick="selectOp('logika','NOR',this)">NOR</button>
+            </div>
+            <button class="btn-hitung" onclick="hitungLogika()">[ HITUNG ]</button>
+          </div>
+
+          <!-- ═══ TAB 3: BASIS BILANGAN (Desimal, Biner, Oktal, Hex) ═══ -->
+          <div class="tab-content" id="tab-basis">
+            <div class="input-row">
+              <!-- Input nilai yang akan dikonversi -->
+              <div class="input-group">
+                <label class="input-label" for="basisInput">Value:</label>
+                <input type="text" class="retro-input" id="basisInput" placeholder="Enter value...">
+              </div>
+              <!-- Dropdown pilihan basis bilangan asal -->
+              <div class="input-group">
+                <label class="input-label" for="basisSelect">Base:</label>
+                <select class="retro-select" id="basisSelect">
+                  <option value="Desimal">Desimal (10)</option>
+                  <option value="Biner">Biner (2)</option>
+                  <option value="Oktal">Oktal (8)</option>
+                  <option value="Heksadesimal">Heksadesimal (16)</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-hitung" onclick="hitungBasis()">[ KONVERSI ]</button>
+            <!-- Kontainer tempat menampilkan kartu hasil konversi basis bilangan -->
+            <div class="badge-grid" id="basisBadges"></div>
+          </div>
+
+          <!-- ═══ TAB 4: KONVERSI SUHU (Celsius, Fahrenheit, Kelvin, Reamur) ═══ -->
+          <div class="tab-content" id="tab-suhu">
+            <div class="input-row">
+              <!-- Input angka temperatur -->
+              <div class="input-group">
+                <label class="input-label" for="suhuInput">Temperature:</label>
+                <input type="number" class="retro-input" id="suhuInput" placeholder="Enter number...">
+              </div>
+              <!-- Dropdown satuan asal -->
+              <div class="input-group">
+                <label class="input-label" for="suhuSelect">Unit:</label>
+                <select class="retro-select" id="suhuSelect">
+                  <option value="Celsius">Celsius (°C)</option>
+                  <option value="Fahrenheit">Fahrenheit (°F)</option>
+                  <option value="Kelvin">Kelvin (K)</option>
+                  <option value="Reamur">Reamur (°R)</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-hitung" onclick="hitungSuhu()">[ KONVERSI ]</button>
+            <!-- Kontainer kartu hasil konversi temperatur -->
+            <div class="badge-grid" id="suhuBadges"></div>
+          </div>
+
+          <!-- ═══ TAB 5: KURS MATA UANG (Konversi dari Rupiah / IDR ke Valuta Asing) ═══ -->
+          <div class="tab-content" id="tab-matauang">
+            <!-- Input jumlah nominal Rupiah (IDR) -->
+            <div class="input-group">
+              <label class="input-label" for="idrInput">IDR Amount:</label>
+              <input type="number" class="retro-input" id="idrInput" placeholder="Rp 0">
+            </div>
+            <button class="btn-hitung" onclick="hitungMataUang()">[ KONVERSI ]</button>
+            <!-- Kontainer kartu konversi valuta asing (USD, EUR, GBP, dll) -->
+            <div class="badge-grid badge-grid-3" id="currencyBadges"></div>
+          </div>
+
+          <!-- ═══ TAB 6: BONUS (Fungsi matematika Faktorial & Fibonacci) ═══ -->
+          <div class="tab-content" id="tab-bonus">
+            <div class="bonus-row">
+              <!-- Blok Fitur Faktorial -->
+              <div class="bonus-col">
+                <div class="sub-window">
+                  <div class="sub-titlebar">● ● Faktorial</div>
+                  <div class="sub-body">
+                    <div class="input-group">
+                      <label class="input-label" for="faktInput">Variable n:</label>
+                      <input type="number" class="retro-input" id="faktInput" placeholder="Enter number..." min="0" max="170">
+                    </div>
+                    <button class="btn-hitung" onclick="hitungFaktorial()">[ HITUNG ]</button>
+                    <!-- Terminal mini hasil faktorial -->
+                    <div class="result-terminal" id="faktResult" style="margin-top:10px;min-height:60px">
+                      <span class="prefix">&gt; </span><span class="cursor-blink">_</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Blok Fitur Deret Fibonacci -->
+              <div class="bonus-col">
+                <div class="sub-window">
+                  <div class="sub-titlebar">● ● Fibonacci</div>
+                  <div class="sub-body">
+                    <div class="input-group">
+                      <label class="input-label" for="fibInput">Variable n:</label>
+                      <input type="number" class="retro-input" id="fibInput" placeholder="Enter number..." min="1" max="50">
+                    </div>
+                    <button class="btn-hitung" onclick="hitungFibonacci()">[ HITUNG ]</button>
+                    <!-- Terminal mini hasil fibonacci -->
+                    <div class="result-terminal" id="fibResult" style="margin-top:10px;min-height:60px">
+                      <span class="prefix">&gt; </span><span class="cursor-blink">_</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ RESULT TERMINAL (Tampilan detail evaluasi hasil kalkulasi utama) ═══ -->
+          <div class="result-terminal" id="resultTerminal" style="display:block">
+            <span class="prefix">&gt; </span><span class="cursor-blink">_</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ HISTORY WINDOW (Jendela Retro Log Aktivitas / Logs.txt) ═══ -->
+      <div class="retro-window history-window">
+        <div class="window-titlebar">
+          <div class="window-dots">
+            <span class="window-dot red"></span>
+            <span class="window-dot grey"></span>
+          </div>
+          <span style="font-size: 16px; font-weight:700; text-transform:none;">Logs.txt</span>
+        </div>
+        <div class="history-body">
+          <!-- Elemen daftar riwayat perhitungan -->
+          <div id="historyList" style="padding: 12px; font-size: 11px;">
+            <div style="color: #668866; margin-bottom: 4px;">* KalkulatorPRO v1.0.42<br>* Session started: 2024-05-20</div>
+            <div><span class="prefix" style="color:var(--terminal-text);">&gt;</span> <span class="cursor-blink">_</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SIDEBAR ICONS (Panel Ikon Pintasan Cepat di Samping Kanan) ═══ -->
+    <div class="sidebar-icons">
+      <div class="sidebar-title">
+        <span style="font-size:16px; font-weight:bold; color:var(--accent);">Tools</span>
+        <span style="font-size:9px; color:#888;">v1.0.42</span>
+      </div>
+      <!-- Tombol shortcut tab Aritmatika -->
+      <button class="sidebar-icon active" data-tab="aritmatika">
+        <span class="icon-emoji">🖥️</span>
+        <span class="icon-label">Arit</span>
+      </button>
+      <!-- Tombol shortcut tab Logika -->
+      <button class="sidebar-icon" data-tab="logika">
+        <span class="icon-emoji">⚙️</span>
+        <span class="icon-label">Logic</span>
+      </button>
+      <!-- Tombol shortcut tab Konverter Basis -->
+      <button class="sidebar-icon" data-tab="basis">
+        <span class="icon-emoji">↔️</span>
+        <span class="icon-label">Conv</span>
+      </button>
+      <!-- Tombol shortcut tab Konverter Suhu -->
+      <button class="sidebar-icon" data-tab="suhu">
+        <span class="icon-emoji">🌡️</span>
+        <span class="icon-label">Suhu</span>
+      </button>
+      <!-- Tombol shortcut tab Konverter Kurs -->
+      <button class="sidebar-icon" data-tab="matauang">
+        <span class="icon-emoji">💱</span>
+        <span class="icon-label">Kurs</span>
+      </button>
+      <!-- Tombol shortcut tab Bonus -->
+      <button class="sidebar-icon" data-tab="bonus">
+        <span class="icon-emoji">⭐</span>
+        <span class="icon-label">Bonus</span>
+      </button>
+      <!-- Tombol hapus riwayat (Reset logs) -->
+      <button class="sidebar-icon" data-tab="clear" style="margin-top:auto; margin-bottom: 10px;">
+        <span class="icon-emoji">🔄</span>
+        <span class="icon-label">Clear</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Memuat file JavaScript utama di akhir dokumen body -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
