@@ -170,3 +170,50 @@ def konversi_mata_uang():
     
     history_store.append({'formula': formula, 'result': f'${results["usd"]}'})
     return jsonify({'results': results, 'formula': formula, 'steps': steps})
+
+# API: Menghitung faktorial n! (maks n=170)
+@app.route('/api/faktorial', methods=['POST'])
+def faktorial():
+    data = request.get_json()
+    try: n = int(data.get('value'))
+    except (TypeError, ValueError): return jsonify({'error': 'Input harus bilangan bulat!'}), 400
+    if n < 0: return jsonify({'error': 'Tidak bisa untuk bilangan negatif!'}), 400
+    if n > 170: return jsonify({'error': 'Maksimal 170!'}), 400
+
+    result = math.factorial(n)  # Gunakan fungsi bawaan Python
+    formula = f'{n}!'
+    
+    steps = [
+        f'Menyiapkan fungsi faktorial (n!)',
+        f'Nilai n = {n}',
+        f'Melakukan iterasi perkalian mundur (n × n-1 × ... × 1)',
+        f'Evaluasi selesai. Hasil: {result}'
+    ]
+    
+    history_store.append({'formula': formula, 'result': str(result)})
+    return jsonify({'result': str(result), 'formula': formula, 'steps': steps})  # str agar JS tidak bulatkan
+
+# API: Menghitung deret Fibonacci hingga n suku (maks 50)
+@app.route('/api/fibonacci', methods=['POST'])
+def fibonacci():
+    data = request.get_json()
+    try: n = int(data.get('value'))
+    except (TypeError, ValueError): return jsonify({'error': 'Input harus bilangan bulat!'}), 400
+    if n < 1: return jsonify({'error': 'Minimal 1 suku!'}), 400
+    if n > 50: return jsonify({'error': 'Maksimal 50 suku!'}), 400
+
+    # Algoritma iteratif deret Fibonacci
+    fib = []; a, b = 0, 1
+    for _ in range(n):
+        fib.append(a); a, b = b, a + b
+
+    formula = f'Fibonacci({n})'
+    steps = [
+        f'Menyiapkan deret Fibonacci',
+        f'Menargetkan jumlah {n} suku pertama',
+        f'Menetapkan nilai awal: F(0) = 0, F(1) = 1',
+        f'Menerapkan rumus rekursif F(n) = F(n-1) + F(n-2)...',
+        f'Evaluasi selesai.'
+    ]
+    history_store.append({'formula': formula, 'result': str(fib[-1])})
+    return jsonify({'result': fib, 'formula': formula, 'steps': steps})
