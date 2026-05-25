@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KalkulatorPromax - v1.0</title>
+  <!-- Menghubungkan file styling eksternal bergaya retro Y2K -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- BACKGROUND EFEK GELOMBANG/SWIRL -->
+  <div class="desktop-bg"></div>
+
+  <!-- ═══ MENU BAR (Bar navigasi atas mirip sistem operasi klasik) ═══ -->
+  <div class="menu-bar">
+    <div class="menu-bar-left">
+      <!-- Judul brand aplikasi -->
+      <span style="font-weight:700;">KalkulatorPromax - v1.0</span>
+    </div>
+    <div class="menu-bar-right">
+      <!-- Tombol pengalih tema gelap/terang -->
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN LAYOUT (Tata Letak Desktop Area & Sidebar) ═══ -->
+  <div class="app-layout">
+    <div class="desktop-area">
+
+      <!-- ═══ CALCULATOR WINDOW (Jendela Utama Pengolah Data) ═══ -->
+      <div class="retro-window calc-window">
+        <!-- Titlebar jendela retro -->
+        <div class="window-titlebar">
+          <div class="window-dots">
+            <span class="window-dot red"></span>
+            <span class="window-dot orange"></span>
+            <span class="window-dot green"></span>
+          </div>
+          <span id="windowTitle" style="font-size: 16px; font-weight:700; text-transform:none;">Arithmetic</span>
+        </div>
+        
+        <!-- NAVIGASI TAB (Tombol-tombol untuk berganti halaman fitur) -->
+        <div class="tab-nav">
+          <div class="tab-btn active" data-tab="aritmatika" onclick="switchTab('aritmatika')">Aritmatika</div>
+          <div class="tab-btn" data-tab="logika" onclick="switchTab('logika')">Logika</div>
+          <div class="tab-btn" data-tab="basis" onclick="switchTab('basis')">Basis</div>
+          <div class="tab-btn" data-tab="suhu" onclick="switchTab('suhu')">Suhu</div>
+          <div class="tab-btn" data-tab="matauang" onclick="switchTab('matauang')">Kurs</div>
+          <div class="tab-btn" data-tab="bonus" onclick="switchTab('bonus')">Bonus</div>
+        </div>
+
+        <div class="window-body">
+          <!-- ═══ TAB 1: ARITMATIKA (Penjumlahan, Pengurangan, Pembagian, Perkalian, dll) ═══ -->
+          <div class="tab-content active" id="tab-aritmatika">
+            <div class="input-row">
+              <!-- Input untuk variabel angka A -->
+              <div class="input-group">
+                <label class="input-label" for="aritA">Variable A:</label>
+                <input type="number" class="retro-input" id="aritA" placeholder="Enter number...">
+              </div>
+              <!-- Input untuk variabel angka B -->
+              <div class="input-group">
+                <label class="input-label" for="aritB">Variable B:</label>
+                <input type="number" class="retro-input" id="aritB" placeholder="Enter number...">
+              </div>
+            </div>
+            
+            <!-- Grid pilihan operator aritmatika -->
+            <div class="op-grid">
+              <button class="op-btn active" onclick="selectOp('aritmatika','+',this)">+</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','-',this)">-</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','×',this)">*</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','÷',this)">/</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','%',this)">%</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','^',this)">^</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','//',this)">//</button>
+              <button class="op-btn" onclick="selectOp('aritmatika','√',this)">√</button>
+            </div>
+            <button class="btn-hitung" onclick="hitungAritmatika()">[ HITUNG ]</button>
+          </div>
+
+          <!-- ═══ TAB 2: LOGIKA (Bitwise & Logic Gate Simulator) ═══ -->
+          <div class="tab-content" id="tab-logika">
+            <!-- Mode Selector (Retro styling) -->
+            <div class="logic-mode-toggle" style="display:flex; gap:8px; margin-bottom:16px;">
+              <button class="tab-btn active" id="modeGateBtn" onclick="setLogicMode('gate')">Gerbang Logika (1-Bit)</button>
+              <button class="tab-btn" id="modeBitwiseBtn" onclick="setLogicMode('bitwise')">Bitwise (Multi-Bit)</button>
+            </div>
+
+            <!-- Mode 1: Gerbang Logika 1-Bit -->
+            <div id="logic-gate-section">
+              <div class="logic-gate-container">
+                <!-- Inputs Column -->
+                <div class="gate-inputs">
+                  <div class="input-group">
+                    <label class="input-label">Input A</label>
+                    <button class="binary-toggle-btn" id="gateInputA" onclick="toggleGateInput('A')">0</button>
+                  </div>
+                  <div class="input-group" id="gateInputBContainer">
+                    <label class="input-label">Input B</label>
+                    <button class="binary-toggle-btn" id="gateInputB" onclick="toggleGateInput('B')">0</button>
+                  </div>
+                </div>
+
+                <!-- Visualizer Column (SVG) -->
+                <div class="gate-visualizer-box">
+                  <div class="gate-visualizer-title">Visualisasi Gerbang</div>
+                  <div class="gate-visualizer-body">
+                    <svg id="gateSvg" viewBox="0 0 200 100" width="100%" height="80">
+                      <!-- Diisi secara dinamis lewat JS -->
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Truth Table Column -->
+                <div class="gate-truth-table-container">
+                  <div class="table-title">Tabel Kebenaran</div>
+                  <table class="truth-table" id="gateTruthTable">
+                    <!-- Diisi secara dinamis lewat JS -->
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode 2: Bitwise (Multi-Bit) -->
+            <div id="logic-bitwise-section" style="display: none;">
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label" for="logA">Variable A (integer):</label>
+                  <input type="number" class="retro-input" id="logA" placeholder="Enter number...">
+                </div>
+                <div class="input-group" id="logBContainer">
+                  <label class="input-label" for="logB">Variable B (integer):</label>
+                  <input type="number" class="retro-input" id="logB" placeholder="Enter number...">
+                </div>
+                <div class="input-group" style="max-width: 120px; flex: 0 0 120px;">
+                  <label class="input-label" for="bitWidthSelect">Lebar Bit:</label>
+                  <select class="retro-select" id="bitWidthSelect">
+                    <option value="8">8-Bit</option>
+                    <option value="16">16-Bit</option>
+                    <option value="32">32-Bit</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Operator Grid ( includes XNOR ) -->
+            <div class="op-grid op-grid-7" style="margin-top: 14px;">
+              <button class="op-btn active" id="op-AND" onclick="selectOp('logika','AND',this)">AND</button>
+              <button class="op-btn" id="op-OR" onclick="selectOp('logika','OR',this)">OR</button>
+              <button class="op-btn" id="op-NOT" onclick="selectOp('logika','NOT',this)">NOT</button>
+              <button class="op-btn" id="op-XOR" onclick="selectOp('logika','XOR',this)">XOR</button>
+              <button class="op-btn" id="op-NAND" onclick="selectOp('logika','NAND',this)">NAND</button>
+              <button class="op-btn" id="op-NOR" onclick="selectOp('logika','NOR',this)">NOR</button>
+              <button class="op-btn" id="op-XNOR" onclick="selectOp('logika','XNOR',this)">XNOR</button>
+            </div>
+            <button class="btn-hitung" onclick="hitungLogika()">[ EVALUASI LOGIKA ]</button>
+          </div>
+
+          <!-- ═══ TAB 3: BASIS BILANGAN (Desimal, Biner, Oktal, Hex) ═══ -->
+          <div class="tab-content" id="tab-basis">
+            <div class="input-row">
+              <!-- Input nilai yang akan dikonversi -->
+              <div class="input-group">
+                <label class="input-label" for="basisInput">Value:</label>
+                <input type="text" class="retro-input" id="basisInput" placeholder="Enter value...">
+              </div>
+              <!-- Dropdown pilihan basis bilangan asal -->
+              <div class="input-group">
+                <label class="input-label" for="basisSelect">Base:</label>
+                <select class="retro-select" id="basisSelect">
+                  <option value="Desimal">Desimal (10)</option>
+                  <option value="Biner">Biner (2)</option>
+                  <option value="Oktal">Oktal (8)</option>
+                  <option value="Heksadesimal">Heksadesimal (16)</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-hitung" onclick="hitungBasis()">[ KONVERSI ]</button>
+            <!-- Kontainer tempat menampilkan kartu hasil konversi basis bilangan -->
+            <div class="badge-grid" id="basisBadges"></div>
+          </div>
+
+          <!-- ═══ TAB 4: KONVERSI SUHU (Celsius, Fahrenheit, Kelvin, Reamur) ═══ -->
+          <div class="tab-content" id="tab-suhu">
+            <div class="input-row">
+              <!-- Input angka temperatur -->
+              <div class="input-group">
+                <label class="input-label" for="suhuInput">Temperature:</label>
+                <input type="number" class="retro-input" id="suhuInput" placeholder="Enter number...">
+              </div>
+              <!-- Dropdown satuan asal -->
+              <div class="input-group">
+                <label class="input-label" for="suhuSelect">Unit:</label>
+                <select class="retro-select" id="suhuSelect">
+                  <option value="Celsius">Celsius (°C)</option>
+                  <option value="Fahrenheit">Fahrenheit (°F)</option>
+                  <option value="Kelvin">Kelvin (K)</option>
+                  <option value="Reamur">Reamur (°R)</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-hitung" onclick="hitungSuhu()">[ KONVERSI ]</button>
+            <!-- Kontainer kartu hasil konversi temperatur -->
+            <div class="badge-grid" id="suhuBadges"></div>
+          </div>
+
+          <!-- ═══ TAB 5: KURS MATA UANG (Konversi dari Rupiah / IDR ke Valuta Asing) ═══ -->
+          <div class="tab-content" id="tab-matauang">
+            <!-- Input jumlah nominal Rupiah (IDR) -->
+            <div class="input-group">
+              <label class="input-label" for="idrInput">IDR Amount:</label>
+              <input type="number" class="retro-input" id="idrInput" placeholder="Rp 0">
+            </div>
+            <button class="btn-hitung" onclick="hitungMataUang()">[ KONVERSI ]</button>
+            <!-- Kontainer kartu konversi valuta asing (USD, EUR, GBP, dll) -->
+            <div class="badge-grid badge-grid-3" id="currencyBadges"></div>
+          </div>
+
+          <!-- ═══ TAB 6: BONUS (Fungsi matematika Faktorial & Fibonacci) ═══ -->
+          <div class="tab-content" id="tab-bonus">
+            <div class="bonus-row">
+              <!-- Blok Fitur Faktorial -->
+              <div class="bonus-col">
+                <div class="sub-window">
+                  <div class="sub-titlebar">● ● Faktorial</div>
+                  <div class="sub-body">
+                    <div class="input-group">
+                      <label class="input-label" for="faktInput">Variable n:</label>
+                      <input type="number" class="retro-input" id="faktInput" placeholder="Enter number..." min="0" max="170">
+                    </div>
+                    <button class="btn-hitung" onclick="hitungFaktorial()">[ HITUNG ]</button>
+                    <!-- Terminal mini hasil faktorial -->
+                    <div class="result-terminal" id="faktResult" style="margin-top:10px;min-height:60px">
+                      <span class="prefix">&gt; </span><span class="cursor-blink">_</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Blok Fitur Deret Fibonacci -->
+              <div class="bonus-col">
+                <div class="sub-window">
+                  <div class="sub-titlebar">● ● Fibonacci</div>
+                  <div class="sub-body">
+                    <div class="input-group">
+                      <label class="input-label" for="fibInput">Variable n:</label>
+                      <input type="number" class="retro-input" id="fibInput" placeholder="Enter number..." min="1" max="50">
+                    </div>
+                    <button class="btn-hitung" onclick="hitungFibonacci()">[ HITUNG ]</button>
+                    <!-- Terminal mini hasil fibonacci -->
+                    <div class="result-terminal" id="fibResult" style="margin-top:10px;min-height:60px">
+                      <span class="prefix">&gt; </span><span class="cursor-blink">_</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ RESULT TERMINAL (Tampilan detail evaluasi hasil kalkulasi utama) ═══ -->
+          <div class="result-terminal" id="resultTerminal" style="display:block">
+            <span class="prefix">&gt; </span><span class="cursor-blink">_</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ HISTORY WINDOW (Jendela Retro Log Aktivitas / History) ═══ -->
+      <div class="retro-window history-window">
+        <div class="window-titlebar">
+          <div class="window-dots">
+            <span class="window-dot red"></span>
+            <span class="window-dot orange"></span>
+            <span class="window-dot green"></span>
+          </div>
+          <span style="font-size: 16px; font-weight:700; text-transform:none;">History</span>
+        </div>
+        <div class="history-body">
+          <!-- Elemen daftar riwayat perhitungan -->
+          <div id="historyList" style="padding: 12px; font-size: 11px;">
+            <div style="color: #668866; margin-bottom: 4px;">* KalkulatorPRO v1.0.42<br>* Session started: 2024-05-20</div>
+            <div><span class="prefix" style="color:var(--terminal-text);">&gt;</span> <span class="cursor-blink">_</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SIDEBAR ICONS (Panel Ikon Pintasan Cepat di Samping Kanan) ═══ -->
+    <div class="sidebar-icons">
+      <div class="sidebar-title">
+        <span class="tools-label">TOOLS</span>
+        <span class="version-label">v1.0.42</span>
+      </div>
+      <!-- Tombol shortcut tab Aritmatika -->
+      <button class="sidebar-icon active" data-tab="aritmatika">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </span>
+        <span class="icon-label">ARIT</span>
+      </button>
+      <!-- Tombol shortcut tab Logika -->
+      <button class="sidebar-icon" data-tab="logika">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </span>
+        <span class="icon-label">LOGIC</span>
+      </button>
+      <!-- Tombol shortcut tab Konverter Basis -->
+      <button class="sidebar-icon" data-tab="basis">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+          </svg>
+        </span>
+        <span class="icon-label">CONV</span>
+      </button>
+      <!-- Tombol shortcut tab Konverter Suhu -->
+      <button class="sidebar-icon" data-tab="suhu">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#ec4899" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </span>
+        <span class="icon-label">SUHU</span>
+      </button>
+      <!-- Tombol shortcut tab Konverter Kurs -->
+      <button class="sidebar-icon" data-tab="matauang">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#2563eb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <path d="M8 12.5C8 10 10 9 12 9s4 1 4 3.5-2 3.5-4 3.5-4-1-4-3.5z"></path>
+          </svg>
+        </span>
+        <span class="icon-label">KURS</span>
+      </button>
+      <!-- Tombol shortcut tab Bonus -->
+      <button class="sidebar-icon" data-tab="bonus">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#eab308" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </span>
+        <span class="icon-label">BONUS</span>
+      </button>
+      <!-- Tombol hapus riwayat (Reset logs) -->
+      <button class="sidebar-icon" data-tab="clear" style="margin-top:auto; margin-bottom: 10px;">
+        <span class="icon-wrapper">
+          <svg class="sidebar-svg" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+        </span>
+        <span class="icon-label">CLEAR</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Memuat file JavaScript utama di akhir dokumen body -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
