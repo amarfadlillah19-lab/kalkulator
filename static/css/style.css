@@ -864,20 +864,43 @@ html, body {
 
 /* ─── RESPONSIVE LAYOUTS ─── */
 @media (max-width: 960px) {
+  /* FIX: Use 100dvh to prevent mobile browser URL bar from clipping content */
+  html, body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .app-layout {
     flex-direction: column;
-    height: auto;
-    overflow-y: auto;
+    height: calc(100vh - 48px);
+    height: calc(100dvh - 48px);
+    overflow: hidden; /* Keep layout fixed, allow inner scroll */
   }
 
   .desktop-area {
     flex-direction: column;
-    overflow: visible;
+    flex: 1; /* Take up all available space above sidebar */
+    overflow-y: auto; /* Native scrolling for content */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px; /* Safe space at the bottom */
+  }
+
+  .calc-window {
+    flex: none; /* Allow window to expand */
+    max-height: none;
+  }
+
+  .window-body {
+    overflow-y: visible; /* Remove nested scroll from calc window */
   }
 
   .history-window {
     width: 100%;
-    max-height: 300px;
+    flex: none;
+    height: 320px; /* Fixed height for history pane */
+    max-height: none;
   }
 
   .sidebar-icons {
@@ -889,6 +912,7 @@ html, body {
     gap: 8px;
     overflow-x: auto;
     overflow-y: hidden;
+    flex-shrink: 0; /* Keep sidebar strictly at the bottom */
   }
 
   .sidebar-title {
