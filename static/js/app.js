@@ -15,6 +15,11 @@ let activeLogicMode = 'gate';
 let gateInputA = 0;
 let gateInputB = 0;
 
+// Base URL pointing to the backend Flask server to support file:// protocol or dynamic port seamlessly
+const BASE_URL = (window.location.protocol === 'file:' || !window.location.port) 
+  ? 'http://127.0.0.1:5000' 
+  : '';
+
 // ─── INIT (Inisialisasi Halaman saat DOM Siap) ───
 document.addEventListener('DOMContentLoaded', () => {
   // Terapkan tema yang tersimpan di memori lokal browser
@@ -156,8 +161,8 @@ function clearResult() {
  * Merender daftar log proses eksekusi dan hasil akhir dari respon API ke terminal utama kalkulator
  * @param {Object} data - Objek hasil kalkulasi dari server
  */
-function showResult(data) {
-  const terminal = document.getElementById('resultTerminal');
+function showResult(data, targetTerminalId = 'resultTerminal') {
+  const terminal = document.getElementById(targetTerminalId);
   if (!terminal) return;
 
   let html = '';
@@ -206,13 +211,13 @@ function showBadges(containerId, results, labels) {
  * @param {Object} body - Objek parameter yang akan dikirim dalam format JSON
  * @returns {Promise<Object|null>} Kembalian objek JSON dari server atau null jika gagal
  */
-async function apiCall(endpoint, body) {
-  const terminal = document.getElementById('resultTerminal');
+async function apiCall(endpoint, body, targetTerminalId = 'resultTerminal') {
+  const terminal = document.getElementById(targetTerminalId);
   // Menampilkan indikator pemrosesan di terminal utama saat menunggu respon server
   if (terminal) terminal.innerHTML = '<span class="loading-text" style="color: var(--accent);">Processing</span>';
 
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch(BASE_URL + endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
@@ -220,13 +225,13 @@ async function apiCall(endpoint, body) {
     const data = await res.json();
     // Tangani skenario kode status respons yang tidak sukses (bukan 2xx)
     if (!res.ok) { 
-      showResult({ error: data.error || 'Terjadi kesalahan!' }); 
+      showResult({ error: data.error || 'Terjadi kesalahan!' }, targetTerminalId); 
       return null; 
     }
     return data;
   } catch (err) {
     // Tangani kegagalan koneksi jaringan ke server Flask
-    showResult({ error: 'Koneksi gagal!' });
+    showResult({ error: 'Koneksi gagal!' }, targetTerminalId);
     return null;
   }
 }
@@ -544,7 +549,7 @@ async function hitungMataUang() {
  * Mengirim nilai n ke backend dan menuliskan log langkah faktorial secara eksklusif ke terminal faktorial.
  */
 async function hitungFaktorial() {
-  const data = await apiCall('/api/faktorial', { value: document.getElementById('faktInput').value });
+  const data = await apiCall('/api/faktorial', { value: document.getElementById('faktInput').value }, 'faktResult');
   if (data) {
     const t = document.getElementById('faktResult');
     if (t) {
@@ -559,7 +564,7 @@ async function hitungFaktorial() {
  * Mengirim jumlah suku ke backend dan menuliskan deret angka ke terminal Fibonacci.
  */
 async function hitungFibonacci() {
-  const data = await apiCall('/api/fibonacci', { value: document.getElementById('fibInput').value });
+  const data = await apiCall('/api/fibonacci', { value: document.getElementById('fibInput').value }, 'fibResult');
   if (data) {
     const t = document.getElementById('fibResult');
     if (t) {
@@ -576,7 +581,7 @@ async function hitungFibonacci() {
  */
 async function loadHistory() {
   try {
-    const res = await fetch('/api/history');
+    const res = await fetch(BASE_URL + '/api/history');
     const data = await res.json();
     const list = document.getElementById('historyList');
     if (!list) return;
@@ -606,7 +611,7 @@ async function loadHistory() {
  * Mengirim perintah penghapusan riwayat kalkulasi ke backend, lalu memperbarui tampilan panel log
  */
 async function clearHistory() {
-  await fetch('/api/history', { method: 'DELETE' });
+  await fetch(BASE_URL + '/api/history', { method: 'DELETE' });
   loadHistory();
 }
 
