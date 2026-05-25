@@ -16,7 +16,7 @@ let gateInputA = 0;
 let gateInputB = 0;
 
 // Base URL pointing to the backend Flask server to support file:// protocol or dynamic port seamlessly
-const BASE_URL = (window.location.protocol === 'file:' || !window.location.port) 
+const BASE_URL = (window.location.protocol === 'file:') 
   ? 'http://127.0.0.1:5000' 
   : '';
 

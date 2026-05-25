@@ -3,27 +3,13 @@ KalkulatorPRO v1.0 - Flask Backend
 Retro Y2K / Vintage Mac OS Aesthetic Calculator
 """
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import math
 from datetime import datetime
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.secret_key = 'kalkulatorpro-retro-y2k-2026'
-
-@app.before_request
-def handle_options():
-    if request.method == 'OPTIONS':
-        response = app.make_default_options_response()
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
 
 history_store = []
 
