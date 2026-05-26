@@ -5,6 +5,7 @@ Retro Y2K / Vintage Mac OS Aesthetic Calculator
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import math
+import os
 from datetime import datetime
 
 app = Flask(__name__)
@@ -301,4 +302,5 @@ def clear_history():
     return jsonify({'message': 'History berhasil dihapus!'})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
